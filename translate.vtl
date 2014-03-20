@@ -1,0 +1,61 @@
+#*
+	ADD/CREATE A TRANSLATION
+	@use #addTranslation($country $text $varName $langVar)
+		$country 	=> (required) "FR" (or any TWO LETTER country code)
+		$varName 	=> (optional, but strongly recommended) for custom var name (for use with translate)
+		$text 		=> (required) "String of text to translate"
+		$langVar 	=> (optional) dotCMS lang var (glossary term) to look up
+*#
+#macro( addTranslation $country $varName $text $langVar )##
+	#if( $UtilMethods.isSet($country) && $UtilMethods.isSet($text) )##
+		## DYNAMICALLY CREATE THE COUNTRY SPECIFIC LANGUAGE VARIABLE
+		#if( $UtilMethods.isSet($varName) && $varName != false )##
+			#set( $_langVarName = ${country.toUpperCase()}_${text.toLowerCase()} )##
+		#else##
+			#set( $_langVarName = ${country.toUpperCase()}_${text.toLowerCase()} )##
+		#end##
+		## CHECK THAT COUNTRY IS TWO LETTER CODE (LIKE FR, US, UK, NL, JP, FR, AU)
+		#if( $country.length() != 2 )##
+			<!-- M: The country endered (${country}) is not valid for the text "${text}" -->
+		#else##
+			## LOOK UP DICTIONARY DEFINITION?
+			#if( $UtilMethods.isSet($langVar) && $UtilMethods.isSet($!glossary.get($langVar)) )##
+				#set( $context.get("$_langVarName") = $glossary.get($langVar) )##
+			#else##
+				#set( $context.get("$_langVarName") = $text )##
+			#end## isset $langVar
+		#end## $country.lenght()
+	#end## isset $country & $text
+#end##
+
+
+#*
+	PRINT A TRANSLATION
+	@use #translate($text $country)
+		$text = "String of text to translate" OR "variable name"
+		$country = "FR" (or any TWO LETTER country code)
+*#
+#macro( translate $text $country )##
+#if( $UtilMethods.isSet($country) && $UtilMethods.isSet($text) )##
+## DYNAMICALLY CREATE THE COUNTRY SPECIFIC LANGUAGE VARIABLE
+#set( $_langVarName = ${country.toUpperCase()}_${varName} )##
+#if( !$UtilMethods.isSet($!_langVarName) )##
+#set( $_langVarName = ${country.toUpperCase()}_${text.toLowerCase()} )##
+#end##
+$!_langVarName##
+#end## isset $country & $text
+#end## translate
+
+
+#*
+	SUGGESTED USE
+*#
+#set( $pageLang = 'FR' )##
+#addTranslation('FR' 'obssessedWithTech' 'Ici Et Ailleurs')
+#addTranslation('US' 'obssessedWithTech' 'Obsessed with Technology')
+#addTranslation('JP' 'obssessedWithTech' 'サービスのご案内')
+#addTranslation('NL' 'obssessedWithTech' 'Global Reach')
+
+#translate( 'obssessedWithTech' $pageLang )##
+
+
