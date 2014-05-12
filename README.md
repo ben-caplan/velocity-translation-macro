@@ -24,4 +24,4 @@ Now all you need to do is call the relevant translation to the page:
     ## OR if you don't want a US fall back:
     #translate( 'obsessedWithTech' $pageLang true )##
   
-Happ coding :-)
+Happy coding :-)
